@@ -1,4 +1,5 @@
-from __future__ import annotations
+
+   from __future__ import annotations
 
 import base64
 from dataclasses import dataclass
@@ -680,6 +681,18 @@ def render_dashboard() -> None:
         st.write("No records match the current filters.")
 
 
+def is_streamlit_runtime() -> bool:
+    if os.environ.get("CLIENT_DASHBOARD_STREAMLIT") == "1":
+        return True
+
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+    except Exception:
+        return False
+
+    return get_script_run_ctx() is not None
+
+
 def main() -> None:
     if st is None:
         print("Streamlit is not installed in this environment.")
@@ -687,7 +700,7 @@ def main() -> None:
         print("Then run: python run_dashboard.py")
         return
 
-    if os.environ.get("CLIENT_DASHBOARD_STREAMLIT") != "1":
+    if not is_streamlit_runtime():
         print("This file is a Streamlit app.")
         print("Run it with: python run_dashboard.py")
         return
